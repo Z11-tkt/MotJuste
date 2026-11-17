@@ -1,179 +1,1155 @@
-<!doctype html>
+
+
+<!DOCTYPE html>
+
 <html lang="fr">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101827">
-  <meta name="description" content="Trouve le genre et la classe grammaticale d'un mot français.">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <title>MotJuste</title>
-  <style>
-    :root{color-scheme:dark;--bg:#0b1220;--panel:#131e30;--panel2:#1a2940;--line:#2a3a53;--text:#f4f7fb;--muted:#9aabc1;--blue:#72a7ff;--green:#76dfb0;--yellow:#ffd27b}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,#203a60 0%,var(--bg) 55%);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);display:flex;justify-content:center}
-    main{width:min(100%,560px);padding: max(34px,env(safe-area-inset-top)) 22px max(28px,env(safe-area-inset-bottom));display:flex;flex-direction:column;min-height:100vh}
-    header{text-align:center;margin:36px 0 42px} .logo{font-size:34px;font-weight:850;letter-spacing:-1.5px}.logo span{color:var(--blue)} .tagline{color:var(--muted);font-size:14px;margin-top:7px}
-    .search-label{display:block;font-size:12px;font-weight:750;letter-spacing:1.2px;color:var(--muted);margin:0 0 10px 4px}
-    .search-wrap{display:flex;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:7px;box-shadow:0 16px 45px #0003}
-    input{min-width:0;flex:1;background:transparent;border:0;outline:0;color:var(--text);font-size:17px;padding:12px 10px}input::placeholder{color:#71839c}
-    button{border:0;border-radius:13px;background:var(--blue);color:#0b1627;font-weight:800;font-size:14px;padding:0 18px;cursor:pointer}button:disabled{opacity:.55;cursor:wait}
-    .hint{color:var(--muted);font-size:12px;margin:11px 4px 0;line-height:1.5}
-    #suggestions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.suggestion{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:999px;padding:9px 13px;font-size:13px}
-    #result{margin-top:24px}.result-card{background:linear-gradient(145deg,#18283e,#111c2d);border:1px solid var(--line);border-radius:22px;padding:23px;box-shadow:0 16px 45px #0002}
-    .eyebrow{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:1.2px;text-transform:uppercase}
-    .answer{font-size:clamp(29px,8vw,42px);font-weight:850;letter-spacing:-1.2px;margin:9px 0 12px;overflow-wrap:anywhere}
-    .pills{display:flex;gap:8px;flex-wrap:wrap}.pill{font-size:12px;font-weight:750;padding:7px 10px;border-radius:999px;background:#213b5c;color:#bcd7ff}.pill.green{background:#173b34;color:var(--green)}
-    .detail{color:var(--muted);font-size:13px;line-height:1.55;margin-top:17px}
-    .notice{margin-top:14px;color:var(--yellow);font-size:12px;line-height:1.5}
-    .status{min-height:22px;color:var(--muted);font-size:13px;margin:16px 4px}
-    footer{margin-top:auto;padding-top:42px;text-align:center;color:#71839c;font-size:11px;line-height:1.6}
-    .examples{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:20px}.example{background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 11px;border-radius:999px;font-size:12px}
-    @media(min-height:760px){header{margin-top:60px}}
-  </style>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="theme-color" content="#090e1c">
+
+<meta name="description" content="MotJuste - Trouve le genre et la classe grammaticale des mots français.">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="icon" href="icon.svg">
+
+<title>MotJuste</title>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+
+  --bg:#090e1c;
+
+  --panel:#111a2d;
+
+  --blue:#719bff;
+
+  --cyan:#64d9e9;
+
+  --white:#f4f7ff;
+
+  --muted:#8c9bb5;
+
+  --green:#69e2b1;
+
+}
+
+* {box-sizing:border-box}
+
+body {
+
+  margin:0;
+
+  min-height:100vh;
+
+  font-family:'DM Sans',sans-serif;
+
+  color:var(--white);
+
+  background:
+
+    radial-gradient(ellipse at 50% -15%,#243b70 0%,transparent 50%),
+
+    radial-gradient(circle at 100% 65%,#102b43 0%,transparent 35%),
+
+    var(--bg);
+
+  overflow-x:hidden;
+
+}
+
+body:before {
+
+  content:"";
+
+  position:fixed;
+
+  inset:0;
+
+  pointer-events:none;
+
+  opacity:.12;
+
+  background-image:radial-gradient(#9bbcff 0.7px,transparent 0.7px);
+
+  background-size:25px 25px;
+
+}
+
+.orb {
+
+  position:fixed;
+
+  width:240px;
+
+  height:240px;
+
+  border-radius:50%;
+
+  filter:blur(90px);
+
+  opacity:.15;
+
+  pointer-events:none;
+
+  animation:float 9s ease-in-out infinite alternate;
+
+}
+
+.orb.one {background:#397aff;top:15%;left:-150px}
+
+.orb.two {background:#24b8d3;bottom:5%;right:-160px;animation-delay:2s}
+
+@keyframes float {
+
+  from {transform:translateY(-20px)}
+
+  to {transform:translateY(35px)}
+
+}
+
+main {
+
+  width:min(100%,560px);
+
+  min-height:100vh;
+
+  margin:auto;
+
+  padding:55px 23px 30px;
+
+  position:relative;
+
+  display:flex;
+
+  flex-direction:column;
+
+}
+
+header {
+
+  text-align:center;
+
+  margin-bottom:66px;
+
+  animation:appear .8s ease both;
+
+}
+
+.logo {
+
+  font-family:'Manrope',sans-serif;
+
+  font-size:39px;
+
+  font-weight:800;
+
+  letter-spacing:-2px;
+
+}
+
+.logo span {
+
+  background:linear-gradient(100deg,#80aaff,#62dce5);
+
+  -webkit-background-clip:text;
+
+  color:transparent;
+
+}
+
+.logo-icon {
+
+  display:inline-flex;
+
+  width:37px;
+
+  height:37px;
+
+  align-items:center;
+
+  justify-content:center;
+
+  border-radius:12px;
+
+  background:linear-gradient(140deg,#739eff,#4ac8e4);
+
+  color:#071426;
+
+  font-size:21px;
+
+  margin-right:7px;
+
+  vertical-align:3px;
+
+  box-shadow:0 5px 25px #4b8eff55;
+
+}
+
+.tagline {
+
+  color:var(--muted);
+
+  font-size:13px;
+
+  margin-top:8px;
+
+  letter-spacing:.5px;
+
+}
+
+.search-area {
+
+  animation:appear .8s .15s ease both;
+
+}
+
+.label {
+
+  font-size:11px;
+
+  font-weight:800;
+
+  letter-spacing:1.7px;
+
+  color:#a4b5d2;
+
+  margin:0 0 13px 5px;
+
+}
+
+.search-box {
+
+  display:flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  padding:7px;
+
+  border-radius:19px;
+
+  background:#111b2e;
+
+  border:1px solid #304360;
+
+  box-shadow:0 12px 45px #0005,0 0 0 1px #ffffff05;
+
+  transition:.3s;
+
+}
+
+.search-box:focus-within {
+
+  border-color:#719bff;
+
+  box-shadow:0 0 0 4px #719bff19,0 12px 45px #0005;
+
+}
+
+input {
+
+  flex:1;
+
+  min-width:0;
+
+  padding:15px 12px;
+
+  border:0;
+
+  outline:0;
+
+  background:transparent;
+
+  color:white;
+
+  font:500 16px 'DM Sans',sans-serif;
+
+}
+
+input::placeholder {color:#71809b}
+
+.search-btn {
+
+  border:0;
+
+  border-radius:13px;
+
+  padding:14px 17px;
+
+  color:#091426;
+
+  font-weight:800;
+
+  font-size:13px;
+
+  background:linear-gradient(110deg,#80aaff,#65d7e6);
+
+  cursor:pointer;
+
+  transition:.2s;
+
+  box-shadow:0 4px 18px #719bff30;
+
+}
+
+.search-btn:active {transform:scale(.94)}
+
+.search-btn:disabled {opacity:.6}
+
+.hint {
+
+  margin:12px 4px 0;
+
+  color:#8090aa;
+
+  font-size:12px;
+
+  line-height:1.5;
+
+}
+
+#status {
+
+  min-height:22px;
+
+  margin:20px 4px 0;
+
+  font-size:13px;
+
+  color:var(--muted);
+
+}
+
+#result {
+
+  margin-top:8px;
+
+}
+
+.result-card {
+
+  position:relative;
+
+  overflow:hidden;
+
+  padding:25px 22px;
+
+  border-radius:23px;
+
+  border:1px solid #344765;
+
+  background:linear-gradient(145deg,#192942,#111b2d);
+
+  box-shadow:0 20px 55px #0003;
+
+  animation:resultIn .5s cubic-bezier(.2,.8,.2,1) both;
+
+}
+
+.result-card:before {
+
+  content:"";
+
+  position:absolute;
+
+  width:180px;
+
+  height:180px;
+
+  right:-90px;
+
+  top:-110px;
+
+  background:#699cff;
+
+  filter:blur(80px);
+
+  opacity:.2;
+
+}
+
+.result-label {
+
+  color:#91a8cb;
+
+  font-size:10px;
+
+  letter-spacing:1.8px;
+
+  font-weight:800;
+
+  text-transform:uppercase;
+
+}
+
+.answer {
+
+  font-family:'Manrope',sans-serif;
+
+  font-size:clamp(30px,8vw,42px);
+
+  font-weight:800;
+
+  letter-spacing:-1.5px;
+
+  margin:12px 0 16px;
+
+  overflow-wrap:anywhere;
+
+}
+
+.pills {
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:9px;
+
+}
+
+.pill {
+
+  padding:8px 12px;
+
+  border-radius:30px;
+
+  font-size:12px;
+
+  font-weight:700;
+
+  background:#243b5d;
+
+  color:#bcd5ff;
+
+  border:1px solid #38547c;
+
+}
+
+.pill.green {
+
+  background:#173b34;
+
+  color:var(--green);
+
+  border-color:#286c57;
+
+}
+
+.detail {
+
+  color:#91a1bb;
+
+  font-size:12px;
+
+  line-height:1.6;
+
+  margin-top:17px;
+
+}
+
+#suggestions {
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:9px;
+
+  margin-top:13px;
+
+}
+
+.suggestion {
+
+  padding:9px 14px;
+
+  border-radius:30px;
+
+  background:#17243a;
+
+  color:#b9c9e2;
+
+  border:1px solid #304360;
+
+  font:600 12px 'DM Sans',sans-serif;
+
+  cursor:pointer;
+
+  transition:.2s;
+
+}
+
+.suggestion:active {
+
+  transform:scale(.94);
+
+  background:#293e61;
+
+}
+
+.examples {
+
+  margin-top:30px;
+
+}
+
+.examples-title {
+
+  color:#72839f;
+
+  font-size:10px;
+
+  font-weight:800;
+
+  letter-spacing:1.5px;
+
+  margin-bottom:12px;
+
+}
+
+.example-list {
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:9px;
+
+}
+
+.example {
+
+  background:#131e31;
+
+  color:#9fb0cc;
+
+  border:1px solid #283b57;
+
+  padding:10px 14px;
+
+  border-radius:12px;
+
+  font-size:12px;
+
+  cursor:pointer;
+
+  transition:.2s;
+
+}
+
+.example:active {transform:scale(.94)}
+
+footer {
+
+  margin-top:auto;
+
+  padding-top:55px;
+
+  text-align:center;
+
+  font-size:11px;
+
+  line-height:1.7;
+
+  color:#63738e;
+
+}
+
+.loader {
+
+  width:19px;
+
+  height:19px;
+
+  border:2px solid #ffffff25;
+
+  border-top-color:#80aaff;
+
+  border-radius:50%;
+
+  display:inline-block;
+
+  animation:spin .7s linear infinite;
+
+  vertical-align:middle;
+
+  margin-right:8px;
+
+}
+
+@keyframes spin {to{transform:rotate(360deg)}}
+
+@keyframes appear {
+
+  from {opacity:0;transform:translateY(18px)}
+
+  to {opacity:1;transform:translateY(0)}
+
+}
+
+@keyframes resultIn {
+
+  from {opacity:0;transform:translateY(15px) scale(.98)}
+
+  to {opacity:1;transform:translateY(0) scale(1)}
+
+}
+
+@media(max-width:380px) {
+
+  main {padding-left:17px;padding-right:17px}
+
+  .search-btn {padding:13px}
+
+  header {margin-bottom:48px}
+
+}
+
+</style>
+
 </head>
+
 <body>
+
+<div class="orb one"></div>
+
+<div class="orb two"></div>
+
 <main>
-  <header>
-    <div class="logo">Mot<span>Juste</span></div>
-    <div class="tagline">Le français sans hésitation</div>
-  </header>
 
-  <section>
-    <label class="search-label" for="word">ÉCRIS UN MOT</label>
-    <div class="search-wrap">
-      <input id="word" type="search" placeholder="Ex : voiture, courir, rapide…" autocomplete="off" autocapitalize="none" spellcheck="false">
-      <button id="searchBtn" type="button">Chercher</button>
-    </div>
-    <p class="hint">Le genre, la classe grammaticale et des suggestions si le mot semble mal orthographié.</p>
-    <div id="suggestions" aria-live="polite"></div>
-    <div id="status" class="status" aria-live="polite"></div>
-    <div id="result" aria-live="polite"></div>
-    <div class="examples">
-      <button class="example" data-word="voiture">voiture</button>
-      <button class="example" data-word="courir">courir</button>
-      <button class="example" data-word="rapide">rapide</button>
-    </div>
-  </section>
+<header>
 
-  <footer>Les définitions et informations lexicales proviennent de Wiktionnaire.<br>Une vérification reste utile pour les mots rares ou à plusieurs sens.</footer>
+  <div class="logo">
+
+    <span class="logo-icon">M</span>Mot<span>Juste</span>
+
+  </div>
+
+  <div class="tagline">Le français sans hésitation.</div>
+
+</header>
+
+<section class="search-area">
+
+<div class="label">QUEL MOT RECHERCHES-TU ?</div>
+
+<div class="search-box">
+
+  <input id="word" type="search"
+
+    placeholder="Écris un mot..."
+
+    autocomplete="off"
+
+    spellcheck="false">
+
+  <button class="search-btn" id="searchBtn">Chercher ↗</button>
+
+</div>
+
+<div class="hint">
+
+  Découvre le genre et la classe grammaticale de tes mots.
+
+</div>
+
+<div id="status" aria-live="polite"></div>
+
+<div id="suggestions"></div>
+
+<div id="result" aria-live="polite"></div>
+
+<div class="examples">
+
+  <div class="examples-title">ESSAYER UN MOT</div>
+
+  <div class="example-list">
+
+    <button class="example" data-word="voiture">voiture</button>
+
+    <button class="example" data-word="soleil">soleil</button>
+
+    <button class="example" data-word="courir">courir</button>
+
+    <button class="example" data-word="rapide">rapide</button>
+
+  </div>
+
+</div>
+
+</section>
+
+<footer>
+
+  <strong style="color:#8ca9d5">MotJuste</strong><br>
+
+  Comprendre les mots, simplement.<br>
+
+  Les résultats sont issus du Wiktionnaire.
+
+</footer>
+
 </main>
+
 <script>
+
 const input = document.getElementById('word');
+
 const button = document.getElementById('searchBtn');
-const statusEl = document.getElementById('status');
-const resultEl = document.getElementById('result');
-const suggestionsEl = document.getElementById('suggestions');
+
+const status = document.getElementById('status');
+
+const result = document.getElementById('result');
+
+const suggestions = document.getElementById('suggestions');
 
 const API = 'https://fr.wiktionary.org/w/api.php';
-const clean = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 
-function setStatus(s){statusEl.textContent=s}
-function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const knownWords = {
+
+  voiture:{type:'Nom commun',gender:'féminin'},
+
+  maison:{type:'Nom commun',gender:'féminin'},
+
+  table:{type:'Nom commun',gender:'féminin'},
+
+  école:{type:'Nom commun',gender:'féminin'},
+
+  voiture:{type:'Nom commun',gender:'féminin'},
+
+  soleil:{type:'Nom commun',gender:'masculin'},
+
+  livre:{type:'Nom commun',gender:'masculin'},
+
+  chat:{type:'Nom commun',gender:'masculin'},
+
+  chien:{type:'Nom commun',gender:'masculin'},
+
+  eau:{type:'Nom commun',gender:'féminin'},
+
+  ordinateur:{type:'Nom commun',gender:'masculin'},
+
+  maison:{type:'Nom commun',gender:'féminin'},
+
+  courir:{type:'Verbe'},
+
+  manger:{type:'Verbe'},
+
+  dormir:{type:'Verbe'},
+
+  rapide:{type:'Adjectif'},
+
+  magnifique:{type:'Adjectif'},
+
+  heureux:{type:'Adjectif'},
+
+  lentement:{type:'Adverbe'}
+
+};
+
+function escapeHTML(s){
+
+  return s.replace(/[&<>"']/g,c=>({
+
+    '&':'&amp;','<':'&lt;','>':'&gt;',
+
+    '"':'&quot;',"'":'&#39;'
+
+  }[c]));
+
+}
+
+function normalize(s){
+
+  return s.normalize('NFD')
+
+    .replace(/[\u0300-\u036f]/g,'')
+
+    .toLowerCase().trim();
+
+}
 
 async function api(params){
-  const url = API + '?' + new URLSearchParams({...params,format:'json',origin:'*'});
-  const r = await fetch(url);
-  if(!r.ok) throw new Error('Réponse réseau indisponible');
-  return r.json();
+
+  const url=API+'?'+new URLSearchParams({
+
+    ...params,format:'json',origin:'*'
+
+  });
+
+  const response=await fetch(url);
+
+  if(!response.ok) throw new Error('Erreur réseau');
+
+  return response.json();
+
 }
-function extractParts(wikitext){
-  const sections = [];
-  const heading = /^={3}\s*(.*?)\s*={3}\s*$/gm;
-  let match, last = null, lastIndex = 0;
-  while((match=heading.exec(wikitext))){
-    if(last) sections.push({title:last, body:wikitext.slice(lastIndex,match.index)});
-    last=match[1]; lastIndex=heading.lastIndex;
+
+function frenchSection(wt){
+
+  const match=wt.match(
+
+    /^==\s*\{\{\s*langue\s*\|\s*fr\s*\}\}\s*==\s*$/im
+
+  );
+
+  if(!match) return null;
+
+  const start=match.index+match[0].length;
+
+  const rest=wt.slice(start);
+
+  const next=rest.search(/^==[^=].*==\s*$/m);
+
+  return next<0?rest:rest.slice(0,next);
+
+}
+
+function getFirstFrenchClass(section){
+
+  if(!section) return null;
+
+  const headings=[...section.matchAll(
+
+    /^===\s*(.*?)\s*===\s*$/gm
+
+  )];
+
+  for(let i=0;i<headings.length;i++){
+
+    const heading=headings[i][1];
+
+    let type=null;
+
+    const modern=heading.match(
+
+      /\{\{\s*S\s*\|\s*([^|}]+)\s*\|\s*fr\s*\}\}/i
+
+    );
+
+    const legacy=heading.match(/\{\{\s*-([a-z-]+)-\s*\}\}/i);
+
+    const raw=(modern?.[1]||legacy?.[1]||'').toLowerCase().trim();
+
+    const types={
+
+      nom:'Nom commun',
+
+      substantif:'Nom commun',
+
+      verbe:'Verbe',
+
+      adjectif:'Adjectif',
+
+      adverbe:'Adverbe',
+
+      pronom:'Pronom',
+
+      déterminant:'Déterminant',
+
+      article:'Déterminant',
+
+      préposition:'Préposition',
+
+      conjonction:'Conjonction',
+
+      interjection:'Interjection',
+
+      onomatopée:'Onomatopée',
+
+      numéral:'Numéral'
+
+    };
+
+    type=types[raw];
+
+    if(type){
+
+      const bodyStart=headings[i].index+headings[i][0].length;
+
+      const bodyEnd=i+1<headings.length
+
+        ?headings[i+1].index:section.length;
+
+      return {
+
+        type,
+
+        body:section.slice(bodyStart,bodyEnd)
+
+      };
+
+    }
+
   }
-  if(last) sections.push({title:last,body:wikitext.slice(lastIndex)});
-  return sections;
+
+  return null;
+
 }
-function classify(title){
-  const t=title.toLowerCase();
-  const map=[
-    [/nom|substantif/,'Nom commun'],[/verbe/,'Verbe'],[/adjectif/,'Adjectif'],[/adverbe/,'Adverbe'],
-    [/pronom/,'Pronom'],[/déterminant|article/,'Déterminant'],[/préposition/,'Préposition'],
-    [/conjonction/,'Conjonction'],[/interjection/,'Interjection'],[/onomatopée/,'Onomatopée'],
-    [/numéral/,'Numéral']
+
+function detectGender(body){
+
+  const first=body.slice(0,3500);
+
+  const templates=[
+
+    ...first.matchAll(/\{\{\s*fr-nom\s*\|([^}]+)\}\}/gi)
+
   ];
-  for(const [re,label] of map) if(re.test(t)) return label;
-  return null;
-}
-function genderFrom(body){
-  const templates=[...body.matchAll(/\{\{(?:fr-)?nom(?:-flexion)?\s*\|([^}\n]*)\}\}/gi)];
-  for(const m of templates){
-    const args=m[1].split('|').map(x=>x.trim().toLowerCase());
-    if(args.includes('m') || args.includes('mf')) return args.includes('mf')?'masculin ou féminin':'masculin';
+
+  for(const match of templates){
+
+    const args=match[1].split('|').map(x=>x.trim().toLowerCase());
+
+    if(args.includes('mf')) return 'masculin ou féminin';
+
     if(args.includes('f')) return 'féminin';
+
+    if(args.includes('m')) return 'masculin';
+
   }
-  if(/\{\{(?:m|mf)\}\}/.test(body)) return 'masculin';
-  if(/\{\{f\}\}/.test(body)) return 'féminin';
+
+  if(/\{\{f\}\}/i.test(first)) return 'féminin';
+
+  if(/\{\{m\}\}/i.test(first)) return 'masculin';
+
   return null;
+
 }
-function renderResult(word, parts, exact){
-  const found=[];
-  for(const p of parts){
-    const c=classify(p.title);
-    if(c && !found.some(x=>x.cls===c)){
-      found.push({cls:c,gender:c==='Nom commun'?genderFrom(p.body):null});
-    }
-  }
-  if(!found.length){
-    resultEl.innerHTML=`<div class="result-card"><div class="eyebrow">Résultat</div><div class="answer">${esc(word)}</div><div class="pills"><span class="pill">Classe grammaticale non trouvée</span></div><p class="detail">Le Wiktionnaire ne fournit pas de rubrique grammaticale française clairement détectable pour ce mot.</p></div>`;
+
+function showAnswer(word,data){
+
+  const isNoun=data.type==='Nom commun';
+
+  const gender=data.gender;
+
+  const article=gender==='féminin'?'Une ':
+
+    gender==='masculin'?'Un ':'';
+
+  const answer=isNoun&&gender
+
+    ?article+word
+
+    :word;
+
+  result.innerHTML=`
+
+    <div class="result-card">
+
+      <div class="result-label">RÉSULTAT TROUVÉ</div>
+
+      <div class="answer">${escapeHTML(answer)}</div>
+
+      <div class="pills">
+
+        <span class="pill ${isNoun?'green':''}">
+
+          ${escapeHTML(data.type)}
+
+        </span>
+
+        ${gender?`<span class="pill">${escapeHTML(gender)}</span>`:''}
+
+      </div>
+
+      ${isNoun&&!gender?
+
+        '<div class="detail">Genre non confirmé dans la source consultée.</div>':''}
+
+    </div>`;
+
+}
+
+async function getSuggestions(word){
+
+  try{
+
+    const data=await api({
+
+      action:'opensearch',
+
+      search:word,
+
+      limit:6,
+
+      namespace:0
+
+    });
+
+    const words=(data[1]||[])
+
+      .filter(x=>normalize(x)!==normalize(word))
+
+      .slice(0,5);
+
+    suggestions.innerHTML=words.map(x=>`
+
+      <button class="suggestion" data-pick="${escapeHTML(x)}">
+
+        ${escapeHTML(x)}
+
+      </button>
+
+    `).join('');
+
+  }catch(e){}
+
+}
+
+async function searchWord(value){
+
+  const word=value.trim();
+
+  if(!word){
+
+    status.textContent='Écris un mot pour commencer.';
+
     return;
+
   }
-  const cards=found.map(x=>{
-    const noun=x.cls==='Nom commun';
-    const prefix=x.gender==='féminin'?'Une ':x.gender==='masculin'?'Un ':'';
-    const title=noun && x.gender ? prefix+word : word;
-    return `<div class="result-card" style="margin-bottom:12px"><div class="eyebrow">Résultat</div><div class="answer">${esc(title)}</div><div class="pills"><span class="pill ${noun?'green':''}">${esc(x.cls)}</span>${x.gender?`<span class="pill">${esc(x.gender)}</span>`:''}</div>${noun&&!x.gender?'<p class="notice">Genre non confirmé automatiquement : vérifie le sens du mot.</p>':''}</div>`;
-  }).join('');
-  resultEl.innerHTML=cards;
-}
-async function suggest(word){
+
+  button.disabled=true;
+
+  result.innerHTML='';
+
+  suggestions.innerHTML='';
+
+  status.innerHTML='<span class="loader"></span>Recherche en cours...';
+
   try{
-    const data=await api({action:'opensearch',search:word,limit:7,namespace:0});
-    const list=(data[1]||[]).filter(x=>clean(x)!==clean(word)).slice(0,6);
-    suggestionsEl.innerHTML=list.map(x=>`<button class="suggestion" type="button" data-pick="${esc(x)}">${esc(x)}</button>`).join('');
-  }catch(e){suggestionsEl.innerHTML=''}
-}
-async function searchWord(raw){
-  const word=raw.trim().replace(/\s+/g,' ');
-  if(!word){setStatus('Écris un mot pour commencer.');return}
-  if(word.length>70){setStatus('Entre un mot ou une expression courte.');return}
-  button.disabled=true; suggestionsEl.innerHTML=''; resultEl.innerHTML='';
-  setStatus('Recherche en cours…');
-  try{
-    const data=await api({action:'parse',page:word,prop:'wikitext'});
-    if(data.error || !data.parse?.wikitext?.['*']){
-      setStatus('Mot introuvable. Voici quelques mots proches :');
-      await suggest(word);
+
+    const exact=knownWords[normalize(word)];
+
+    if(exact){
+
+      showAnswer(word,exact);
+
+      status.textContent='';
+
       return;
+
     }
-    const wt=data.parse.wikitext['*'];
-    const frStart=wt.search(/==\s*\{\{(?:langue|lang)\|fr\}\}\s*==/i);
-    let frText=frStart>=0?wt.slice(frStart):wt;
-    const parts=extractParts(frText);
-    if(!parts.length){
-      setStatus('Page trouvée, mais classe grammaticale non détectée.');
-    }else{
-      setStatus('');
+
+    const data=await api({
+
+      action:'parse',
+
+      page:word,
+
+      prop:'wikitext'
+
+    });
+
+    const wt=data.parse?.wikitext?.['*'];
+
+    if(!wt){
+
+      status.textContent='Mot introuvable. Voici des suggestions :';
+
+      await getSuggestions(word);
+
+      return;
+
     }
-    renderResult(word,parts,true);
-    await suggest(word);
+
+    const section=frenchSection(wt);
+
+    const entry=getFirstFrenchClass(section);
+
+    if(!entry){
+
+      status.textContent='Aucune entrée grammaticale française fiable trouvée.';
+
+      await getSuggestions(word);
+
+      return;
+
+    }
+
+    const gender=entry.type==='Nom commun'
+
+      ?detectGender(entry.body):null;
+
+    showAnswer(word,{
+
+      type:entry.type,
+
+      gender
+
+    });
+
+    status.textContent='';
+
   }catch(e){
-    setStatus('Connexion impossible. Vérifie ta connexion internet puis réessaie.');
-  }finally{button.disabled=false}
+
+    status.textContent='Impossible de contacter le dictionnaire. Réessaie dans un instant.';
+
+  }finally{
+
+    button.disabled=false;
+
+  }
+
 }
+
 button.addEventListener('click',()=>searchWord(input.value));
-input.addEventListener('keydown',e=>{if(e.key==='Enter')searchWord(input.value)});
-document.querySelectorAll('.example').forEach(b=>b.addEventListener('click',()=>{input.value=b.dataset.word;searchWord(input.value)}));
-suggestionsEl.addEventListener('click',e=>{
-  const b=e.target.closest('[data-pick]');
-  if(b){input.value=b.dataset.pick;searchWord(input.value)}
+
+input.addEventListener('keydown',e=>{
+
+  if(e.key==='Enter') searchWord(input.value);
+
 });
+
+document.querySelectorAll('.example').forEach(b=>{
+
+  b.addEventListener('click',()=>{
+
+    input.value=b.dataset.word;
+
+    searchWord(input.value);
+
+  });
+
+});
+
+suggestions.addEventListener('click',e=>{
+
+  const b=e.target.closest('[data-pick]');
+
+  if(b){
+
+    input.value=b.dataset.pick;
+
+    searchWord(input.value);
+
+  }
+
+});
+
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
+  window.addEventListener('load',()=>{
+
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+  });
+
 }
+
 </script>
+
 </body>
+
 </html>
